@@ -1,0 +1,15 @@
+info:
+  name: Cadastro de ususarios
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3333/auth/register
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
