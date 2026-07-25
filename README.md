@@ -72,7 +72,9 @@ O conteúdo atual representa o início da jornada no curso. Até o momento, o pr
 - manifesto do ambiente ShortBeyond para execução com Podman;
 - configuração inicial do Playwright;
 - projeto de testes dedicado à API;
-- primeiro teste automatizado de disponibilidade da API;
+- teste automatizado de disponibilidade da API (health check);
+- teste automatizado de cadastro de usuários com dados dinâmicos;
+- geração de dados fake com `@faker-js/faker`;
 - coleção inicial de requisições para os fluxos de autenticação;
 - geração de relatório HTML após a execução.
 
@@ -85,6 +87,7 @@ Os próximos commits acompanharão o avanço nas aulas. Por isso, a quantidade d
 | [Playwright Test](https://playwright.dev/docs/test-api-testing) | Criação, execução e validação dos testes de API |
 | [JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript) | Linguagem utilizada nos testes |
 | [Node.js](https://nodejs.org/) | Ambiente de execução do projeto |
+| [Faker](https://fakerjs.dev/) | Geração de dados dinâmicos para os testes |
 | [Podman](https://podman.io/) | Execução local dos containers do ShortBeyond |
 | [PostgreSQL](https://www.postgresql.org/) | Banco de dados da aplicação |
 | [Adminer](https://www.adminer.org/) | Administração visual do banco de dados |
@@ -227,6 +230,29 @@ Resposta esperada:
 }
 ```
 
+### Cadastro de usuários
+
+Arquivo: `playwright/e2e/auth/register.spec.js`
+
+O cenário valida o cadastro de um novo usuário na API:
+
+1. gera dados dinâmicos (nome e e-mail) com `@faker-js/faker`;
+2. envia uma requisição `POST` para `/api/auth/register`;
+3. valida o status HTTP `201`;
+4. confirma a mensagem de sucesso;
+5. confirma que o usuário retornado possui `id`, `name` e `email`;
+6. garante que a senha **não** é retornada na resposta.
+
+Requisição enviada:
+
+```json
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "password": "pwd123"
+}
+```
+
 ## Relatórios
 
 O Playwright está configurado para gerar um relatório HTML. Depois da execução, abra o último relatório com:
@@ -256,6 +282,8 @@ Em ambientes de integração contínua, a configuração atual também:
 │   └── opencollection.yml
 ├── playwright/
 │   └── e2e/
+│       ├── auth/
+│       │   └── register.spec.js
 │       └── health.spec.js
 ├── .gitignore
 ├── package-lock.json
@@ -294,7 +322,7 @@ O roadmap abaixo é vivo e será atualizado conforme o progresso no curso.
 - [x] Criar o projeto Playwright para testes de API
 - [x] Validar a disponibilidade da API com um health check
 - [x] Iniciar a coleção de requisições para exploração da API
-- [ ] Automatizar o cadastro de usuários
+- [x] Automatizar o cadastro de usuários
 - [ ] Garantir a independência dos cenários
 - [ ] Criar factories para geração de dados
 - [ ] Aplicar hooks de preparação e limpeza

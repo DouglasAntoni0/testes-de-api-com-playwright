@@ -5,7 +5,14 @@ info:
 
 http:
   method: POST
-  url: http://localhost:3333/auth/register
+  url: http://localhost:3333/api/auth/login
+  body:
+    type: json
+    data: |-
+      {
+        "email": "douglas@email.com",
+        "password": "pwd123"
+      }
   auth: inherit
 
 settings:
