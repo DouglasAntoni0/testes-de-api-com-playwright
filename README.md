@@ -57,7 +57,7 @@ Ao longo do desenvolvimento deste repositório, pretendo praticar:
 - testes de cadastro, autenticação e autorização;
 - geração e validação de tokens;
 - independência e isolamento entre cenários;
-- reutilização de código com factories, hooks e fixtures;
+- reutilização de código com factories, services, hooks e fixtures;
 - gerenciamento de configurações por variáveis de ambiente;
 - execução de regressão pela linha de comando;
 - geração e análise de relatórios;
@@ -67,14 +67,16 @@ Ao longo do desenvolvimento deste repositório, pretendo praticar:
 
 **Em desenvolvimento.**
 
-O conteúdo atual representa o início da jornada no curso. Até o momento, o projeto contém:
+O conteúdo atual representa o progresso no curso. Até o momento, o projeto contém:
 
 - manifesto do ambiente ShortBeyond para execução com Podman;
-- configuração inicial do Playwright;
-- projeto de testes dedicado à API;
+- configuração do Playwright otimizada para testes de API;
 - teste automatizado de disponibilidade da API (health check);
-- teste automatizado de cadastro de usuários com dados dinâmicos;
-- geração de dados fake com `@faker-js/faker`;
+- testes automatizados de cadastro de usuários com cenários positivos e negativos;
+- factory para geração de dados dinâmicos com `@faker-js/faker`;
+- service layer para encapsular chamadas à API de cadastro;
+- validação de campos obrigatórios (nome, e-mail, senha);
+- validação de e-mail duplicado e formato inválido;
 - coleção inicial de requisições para os fluxos de autenticação;
 - geração de relatório HTML após a execução.
 
@@ -152,7 +154,7 @@ cd testes-de-api-com-playwright
 npm install
 ```
 
-O projeto utiliza o Playwright somente para testes de API. Por isso, não é necessário abrir um navegador para executar o cenário atual.
+O projeto utiliza o Playwright somente para testes de API. Por isso, não é necessário abrir um navegador para executar os cenários.
 
 ### 3. Inicie o ambiente ShortBeyond
 
@@ -234,16 +236,18 @@ Resposta esperada:
 
 Arquivo: `playwright/e2e/auth/register.spec.js`
 
-O cenário valida o cadastro de um novo usuário na API:
+A suíte valida o fluxo completo de cadastro de usuários na API, cobrindo cenários positivos e negativos:
 
-1. gera dados dinâmicos (nome e e-mail) com `@faker-js/faker`;
-2. envia uma requisição `POST` para `/api/auth/register`;
-3. valida o status HTTP `201`;
-4. confirma a mensagem de sucesso;
-5. confirma que o usuário retornado possui `id`, `name` e `email`;
-6. garante que a senha **não** é retornada na resposta.
+| Cenário | Status esperado | Validação |
+| --- | --- | --- |
+| Cadastro com dados válidos | `201` | Mensagem de sucesso, dados do usuário retornados, senha ausente |
+| E-mail já em uso | `400` | Mensagem de e-mail duplicado |
+| E-mail com formato inválido | `400` | Mensagem de e-mail inválido |
+| Nome não informado | `400` | Mensagem de campo obrigatório |
+| E-mail não informado | `400` | Mensagem de campo obrigatório |
+| Senha não informada | `400` | Mensagem de campo obrigatório |
 
-Requisição enviada:
+Exemplo de requisição enviada:
 
 ```json
 {
@@ -252,6 +256,8 @@ Requisição enviada:
   "password": "pwd123"
 }
 ```
+
+Os dados do cenário positivo são gerados dinamicamente com `@faker-js/faker` através da factory `getUser()`. Os cenários negativos utilizam dados estáticos para validar cada regra individualmente.
 
 ## Relatórios
 
@@ -279,12 +285,18 @@ Em ambientes de integração contínua, a configuração atual também:
 │   │   ├── Cadastro de ususarios.yml
 │   │   ├── Login do usuario.yml
 │   │   └── folder.yml
+│   ├── .gitignore
 │   └── opencollection.yml
 ├── playwright/
-│   └── e2e/
-│       ├── auth/
-│       │   └── register.spec.js
-│       └── health.spec.js
+│   ├── e2e/
+│   │   ├── auth/
+│   │   │   └── register.spec.js
+│   │   └── health.spec.js
+│   └── support/
+│       ├── factories/
+│       │   └── user.js
+│       └── services/
+│           └── register.js
 ├── .gitignore
 ├── package-lock.json
 ├── package.json
@@ -297,6 +309,8 @@ Em ambientes de integração contínua, a configuração atual também:
 | --- | --- |
 | `docs/` | Coleção de requisições usada na exploração da API |
 | `playwright/e2e/` | Cenários automatizados de API |
+| `playwright/support/factories/` | Factories para geração de dados dinâmicos |
+| `playwright/support/services/` | Services para encapsulamento de chamadas à API |
 | `playwright.config.js` | Configurações de execução, projetos, retries, workers e relatórios |
 | `shortbeyond.yaml` | Definição dos containers do ambiente local |
 | `package.json` | Dependências e metadados do projeto Node.js |
@@ -310,7 +324,7 @@ Em ambientes de integração contínua, a configuração atual também:
 - **clareza:** nomes de testes devem descrever o comportamento esperado;
 - **feedback rápido:** validações na camada de API reduzem o tempo de diagnóstico;
 - **cobertura relevante:** serão considerados fluxos positivos, negativos e regras de negócio;
-- **reutilização:** código repetido deverá ser extraído para factories, fixtures ou helpers;
+- **reutilização:** código repetido deverá ser extraído para factories, services ou helpers;
 - **configuração externa:** URLs e dados sensíveis deverão ser fornecidos por variáveis de ambiente;
 - **evidências:** relatórios e traces deverão facilitar a investigação de falhas.
 
@@ -323,8 +337,9 @@ O roadmap abaixo é vivo e será atualizado conforme o progresso no curso.
 - [x] Validar a disponibilidade da API com um health check
 - [x] Iniciar a coleção de requisições para exploração da API
 - [x] Automatizar o cadastro de usuários
-- [ ] Garantir a independência dos cenários
-- [ ] Criar factories para geração de dados
+- [x] Criar factories para geração de dados
+- [x] Criar service layer para chamadas à API
+- [x] Cobrir cenários negativos de cadastro (campos obrigatórios, e-mail duplicado, e-mail inválido)
 - [ ] Aplicar hooks de preparação e limpeza
 - [ ] Automatizar o login e validar o token
 - [ ] Testar o endpoint de encurtamento de links
@@ -343,10 +358,12 @@ O roadmap abaixo é vivo e será atualizado conforme o progresso no curso.
 ## Boas práticas adotadas
 
 - dependências fixadas por meio do `package-lock.json`;
-- separação entre código de teste e documentação exploratória;
+- separação entre código de teste, suporte (factories/services) e documentação exploratória;
 - exclusão de dependências e artefatos gerados do controle de versão;
 - configuração específica para execução em CI;
 - uso de assertions para validar o contrato da resposta;
+- encapsulamento de chamadas HTTP em services reutilizáveis;
+- geração de dados dinâmicos com factories para evitar acoplamento entre testes;
 - nomes de cenários escritos em português e orientados ao comportamento;
 - histórico incremental para registrar a evolução do aprendizado.
 
