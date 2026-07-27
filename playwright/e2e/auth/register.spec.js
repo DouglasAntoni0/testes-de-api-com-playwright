@@ -1,19 +1,19 @@
 import { test, expect } from '@playwright/test'
 import { getUser } from '../../support/factories/user'
-import { registerService } from '../../support/services/register'
+import { authService } from '../../support/services/auth'
 
 test.describe('POST /auth/register', () => {
 
-    let register
+    let auth
 
     test.beforeEach(({ request }) => {
-        register = registerService(request)
+        auth = authService(request)
     })
 
     test('deve cadastrar um novo usuario', async ({ request }) => {
         const user = getUser()
 
-        const response = await register.createUser(user)
+        const response = await auth.createUser(user)
 
         expect(response.status()).toBe(201)
 
@@ -28,7 +28,7 @@ test.describe('POST /auth/register', () => {
     test('não deve cadastrar quando o email ja estiver em uso', async ({ request }) => {
         const user = getUser()
 
-        const preConditionResponse = await register.createUser(user)
+        const preConditionResponse = await auth.createUser(user)
 
         expect(preConditionResponse.status()).toBe(201)
 
@@ -49,7 +49,7 @@ test.describe('POST /auth/register', () => {
             password: 'pwd123'
         }
 
-        const response = await register.createUser(user)
+        const response = await auth.createUser(user)
 
         expect(response.status()).toBe(400)
 
@@ -64,7 +64,7 @@ test.describe('POST /auth/register', () => {
             password: 'pwd123'
         }
 
-        const response = await register.createUser(user)
+        const response = await auth.createUser(user)
 
         expect(response.status()).toBe(400)
 
@@ -79,7 +79,7 @@ test.describe('POST /auth/register', () => {
             password: 'pwd123'
         }
 
-        const response = await register.createUser(user)
+        const response = await auth.createUser(user)
 
         expect(response.status()).toBe(400)
 
@@ -94,7 +94,7 @@ test.describe('POST /auth/register', () => {
             email: 'douglas@teste.com'
         }
 
-        const response = await register.createUser(user)
+        const response = await auth.createUser(user)
 
         expect(response.status()).toBe(400)
 

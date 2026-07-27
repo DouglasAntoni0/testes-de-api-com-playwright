@@ -73,10 +73,13 @@ O conteúdo atual representa o progresso no curso. Até o momento, o projeto con
 - configuração do Playwright otimizada para testes de API;
 - teste automatizado de disponibilidade da API (health check);
 - testes automatizados de cadastro de usuários com cenários positivos e negativos;
+- testes automatizados de login com cenários positivos e negativos;
 - factory para geração de dados dinâmicos com `@faker-js/faker`;
-- service layer para encapsular chamadas à API de cadastro;
+- service layer unificado (`authService`) para encapsular chamadas de cadastro e login;
+- uso de hook `beforeEach` para inicialização do service em cada suíte;
 - validação de campos obrigatórios (nome, e-mail, senha);
 - validação de e-mail duplicado e formato inválido;
+- validação de credenciais inválidas e campos obrigatórios no login;
 - coleção inicial de requisições para os fluxos de autenticação;
 - geração de relatório HTML após a execução.
 
@@ -259,6 +262,33 @@ Exemplo de requisição enviada:
 
 Os dados do cenário positivo são gerados dinamicamente com `@faker-js/faker` através da factory `getUser()`. Os cenários negativos utilizam dados estáticos para validar cada regra individualmente.
 
+### Login de usuários
+
+Arquivo: `playwright/e2e/auth/login.spec.js`
+
+A suíte valida o fluxo de autenticação (login) na API, cobrindo cenários positivos e negativos:
+
+| Cenário | Status esperado | Validação |
+| --- | --- | --- |
+| Login com credenciais válidas | `200` | Mensagem de sucesso, token retornado, dados do usuário, senha ausente |
+| Senha incorreta | `401` | Mensagem de credenciais inválidas |
+| E-mail não cadastrado | `401` | Mensagem de credenciais inválidas |
+| E-mail não informado | `400` | Mensagem de campo obrigatório |
+| Senha não informada | `400` | Mensagem de campo obrigatório |
+
+Exemplo de requisição enviada:
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "pwd123"
+}
+```
+
+O cenário positivo cria um usuário com a factory `getUser()` antes de realizar o login. Os cenários negativos utilizam dados estáticos para validar cada regra de forma isolada.
+
+A suíte utiliza o hook `beforeEach` para inicializar o `authService` a partir do `request` fornecido pelo Playwright, garantindo que cada cenário tenha sua própria instância do service.
+
 ## Relatórios
 
 O Playwright está configurado para gerar um relatório HTML. Depois da execução, abra o último relatório com:
@@ -290,13 +320,14 @@ Em ambientes de integração contínua, a configuração atual também:
 ├── playwright/
 │   ├── e2e/
 │   │   ├── auth/
+│   │   │   ├── login.spec.js
 │   │   │   └── register.spec.js
 │   │   └── health.spec.js
 │   └── support/
 │       ├── factories/
 │       │   └── user.js
 │       └── services/
-│           └── register.js
+│           └── auth.js
 ├── .gitignore
 ├── package-lock.json
 ├── package.json
@@ -310,7 +341,7 @@ Em ambientes de integração contínua, a configuração atual também:
 | `docs/` | Coleção de requisições usada na exploração da API |
 | `playwright/e2e/` | Cenários automatizados de API |
 | `playwright/support/factories/` | Factories para geração de dados dinâmicos |
-| `playwright/support/services/` | Services para encapsulamento de chamadas à API |
+| `playwright/support/services/` | Services para encapsulamento de chamadas à API (ex.: `authService` com `createUser` e `login`) |
 | `playwright.config.js` | Configurações de execução, projetos, retries, workers e relatórios |
 | `shortbeyond.yaml` | Definição dos containers do ambiente local |
 | `package.json` | Dependências e metadados do projeto Node.js |
@@ -340,8 +371,8 @@ O roadmap abaixo é vivo e será atualizado conforme o progresso no curso.
 - [x] Criar factories para geração de dados
 - [x] Criar service layer para chamadas à API
 - [x] Cobrir cenários negativos de cadastro (campos obrigatórios, e-mail duplicado, e-mail inválido)
-- [ ] Aplicar hooks de preparação e limpeza
-- [ ] Automatizar o login e validar o token
+- [x] Aplicar hooks de preparação e limpeza (`beforeEach` para inicialização do service)
+- [x] Automatizar o login e validar o token
 - [ ] Testar o endpoint de encurtamento de links
 - [ ] Extrair código reutilizável
 - [ ] Criar fixtures personalizadas
@@ -362,7 +393,8 @@ O roadmap abaixo é vivo e será atualizado conforme o progresso no curso.
 - exclusão de dependências e artefatos gerados do controle de versão;
 - configuração específica para execução em CI;
 - uso de assertions para validar o contrato da resposta;
-- encapsulamento de chamadas HTTP em services reutilizáveis;
+- encapsulamento de chamadas HTTP em services reutilizáveis e unificados por domínio;
+- uso de hooks (`beforeEach`) para inicialização de dependências em cada cenário;
 - geração de dados dinâmicos com factories para evitar acoplamento entre testes;
 - nomes de cenários escritos em português e orientados ao comportamento;
 - histórico incremental para registrar a evolução do aprendizado.
