@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test'
 import { authService } from '../../support/services/auth'
 import { getUser } from '../../support/factories/user'
 
-
 test.describe('POST /auth/login', () => {
 
     let auth
@@ -81,6 +80,5 @@ test.describe('POST /auth/login', () => {
         const Body = await response.json()
         expect(Body).toHaveProperty('message', "O campo 'Password' é obrigatório")
     })
-
 
 })

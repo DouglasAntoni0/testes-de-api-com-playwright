@@ -5,11 +5,9 @@
 [![Node.js](https://img.shields.io/badge/Node.js-20%2B-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Status](https://img.shields.io/badge/status-em%20desenvolvimento-blue)](#status-do-projeto)
 
-Projeto de estudos dedicado à automação de testes de APIs REST com **Playwright** e **JavaScript**.
+Projeto de estudos voltado à automação de testes de APIs REST com **Playwright** e **JavaScript**. A suíte exercita a API do **ShortBeyond**, um encurtador de URLs executado em containers com PostgreSQL.
 
-O repositório acompanha minha evolução no curso [Playwright Além da Interface](https://www.udemy.com/course/playwright-alem-da-interface/), ministrado por Fernando Papito na Udemy. A aplicação usada nos exercícios é o **ShortBeyond**, um sistema de encurtamento de URLs com API em Go, banco PostgreSQL e serviços executados em containers.
-
-> Este é um projeto em evolução. Novos testes, factories, fixtures, hooks, relatórios e cenários de performance serão adicionados à medida que eu avançar no curso.
+> **Status:** em desenvolvimento. O repositório acompanha minha evolução no curso [Playwright Além da Interface](https://www.udemy.com/course/playwright-alem-da-interface/), de Fernando Papito. Novos cenários e melhorias serão adicionados conforme o avanço no curso.
 
 ## Sumário
 
@@ -31,73 +29,60 @@ O repositório acompanha minha evolução no curso [Playwright Além da Interfac
 
 ## Sobre o projeto
 
-O Playwright é bastante conhecido pela automação de interfaces web, mas também oferece uma API poderosa para testar serviços HTTP. Neste projeto, o foco está no uso do `APIRequestContext` para enviar requisições diretamente ao backend e validar o comportamento da API sem depender de uma interface gráfica.
+Embora seja muito conhecido pela automação de interfaces, o Playwright também oferece o `APIRequestContext`, recurso usado neste projeto para testar o backend diretamente. Dessa forma, as regras de negócio são validadas com feedback rápido e sem dependência de uma interface gráfica.
 
-O ambiente do ShortBeyond reúne:
+O ambiente local reúne:
 
-- uma API REST executada na porta `3333`;
-- um banco de dados PostgreSQL na porta `5432`;
-- o Adminer para administração do banco na porta `8080`;
-- uma aplicação web disponibilizada na porta `80`;
-- uma coleção de requisições para exploração e documentação da API;
-- testes automatizados escritos com Playwright Test.
-
-Essa abordagem permite aplicar **Shift-Left Testing**: as regras de negócio são verificadas ainda na camada de serviço, com feedback rápido e sem a necessidade de aguardar a interface da aplicação.
+- API REST do ShortBeyond na porta `3333`;
+- banco de dados PostgreSQL na porta `5432`;
+- Adminer para administração do banco na porta `8080`;
+- aplicação web na porta `80`;
+- coleção Bruno para explorar as requisições de autenticação;
+- suíte automatizada de testes de API com Playwright Test.
 
 ## Objetivos de aprendizagem
 
-Ao longo do desenvolvimento deste repositório, pretendo praticar:
+Ao longo do projeto, pratico:
 
-- configuração de um projeto de testes de API com Playwright;
-- preparação de um ambiente local reproduzível com containers;
-- leitura e exploração de contratos de API;
-- criação de requisições HTTP para endpoints REST;
-- validação de status code, headers e corpo da resposta;
-- automação do ciclo CRUD;
-- testes de cadastro, autenticação e autorização;
-- geração e validação de tokens;
-- independência e isolamento entre cenários;
-- reutilização de código com factories, services, hooks e fixtures;
-- gerenciamento de configurações por variáveis de ambiente;
-- execução de regressão pela linha de comando;
-- geração e análise de relatórios;
-- testes de carga e performance com Artillery.
+- configuração e execução de testes de API com Playwright;
+- leitura de contratos REST e validação de status, corpo e regras de negócio;
+- automação de cadastro, autenticação, autorização e encurtamento de links;
+- organização de código com factories, services, hooks e cenários independentes;
+- geração de dados dinâmicos com Faker;
+- execução de regressão e análise de relatórios HTML;
+- preparação do ambiente local com Podman e PostgreSQL;
+- evolução futura para fixtures, variáveis de ambiente e testes de performance.
 
 ## Status do projeto
 
-**Em desenvolvimento.**
+**Em desenvolvimento.** No estado atual, a suíte possui **16 cenários automatizados** distribuídos entre disponibilidade da API, cadastro, login e criação de links.
 
-O conteúdo atual representa o progresso no curso. Até o momento, o projeto contém:
+Já estão disponíveis:
 
-- manifesto do ambiente ShortBeyond para execução com Podman;
-- configuração do Playwright otimizada para testes de API;
-- teste automatizado de disponibilidade da API (health check);
-- testes automatizados de cadastro de usuários com cenários positivos e negativos;
-- testes automatizados de login com cenários positivos e negativos;
-- factory para geração de dados dinâmicos com `@faker-js/faker`;
-- service layer unificado (`authService`) para encapsular chamadas de cadastro e login;
-- uso de hook `beforeEach` para inicialização do service em cada suíte;
-- validação de campos obrigatórios (nome, e-mail, senha);
-- validação de e-mail duplicado e formato inválido;
-- validação de credenciais inválidas e campos obrigatórios no login;
-- coleção inicial de requisições para os fluxos de autenticação;
-- geração de relatório HTML após a execução.
-
-Os próximos commits acompanharão o avanço nas aulas. Por isso, a quantidade de cenários, a organização das pastas e alguns comandos podem evoluir durante o aprendizado.
+- manifesto `shortbeyond.yaml` para iniciar o ambiente com Podman;
+- configuração do Playwright direcionada a testes de API;
+- health check da API;
+- cenários positivos e negativos de cadastro de usuários;
+- cenários positivos e negativos de login;
+- criação de links autenticada e validações de campos e URL;
+- factory com dados dinâmicos de usuário e link;
+- services reutilizáveis para autenticação e links;
+- relatório HTML após a execução;
+- scripts npm para executar a suíte e abrir o relatório.
 
 ## Tecnologias
 
-| Tecnologia | Utilização |
+| Tecnologia | Uso no projeto |
 | --- | --- |
 | [Playwright Test](https://playwright.dev/docs/test-api-testing) | Criação, execução e validação dos testes de API |
-| [JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript) | Linguagem utilizada nos testes |
+| [JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript) | Linguagem dos testes e componentes de suporte |
 | [Node.js](https://nodejs.org/) | Ambiente de execução do projeto |
-| [Faker](https://fakerjs.dev/) | Geração de dados dinâmicos para os testes |
+| [Faker](https://fakerjs.dev/) | Geração de dados dinâmicos e independentes |
 | [Podman](https://podman.io/) | Execução local dos containers do ShortBeyond |
-| [PostgreSQL](https://www.postgresql.org/) | Banco de dados da aplicação |
+| [PostgreSQL](https://www.postgresql.org/) | Persistência de dados da aplicação |
 | [Adminer](https://www.adminer.org/) | Administração visual do banco de dados |
-| [Bruno](https://www.usebruno.com/) | Exploração e organização das requisições da API |
-| [Artillery](https://www.artillery.io/) | Testes de performance previstos no roadmap |
+| [Bruno](https://www.usebruno.com/) | Exploração e documentação de requisições HTTP |
+| [Artillery](https://www.artillery.io/) | Testes de performance planejados |
 
 ## Arquitetura do ambiente
 
@@ -111,10 +96,10 @@ Testes Playwright / Coleção Bruno
          PostgreSQL :5432
 
 Adminer :8080 --------> PostgreSQL
-Aplicação Web :80 ----> ShortBeyond API
+Aplicação web :80 ----> ShortBeyond API
 ```
 
-Os serviços são definidos no arquivo `shortbeyond.yaml` e executados no mesmo pod:
+Os serviços são definidos em `shortbeyond.yaml` e executados no mesmo pod.
 
 | Serviço | Imagem | Porta local |
 | --- | --- | --- |
@@ -131,7 +116,7 @@ Antes de começar, instale:
 - [Node.js](https://nodejs.org/) 20 ou superior;
 - npm, incluído na instalação do Node.js;
 - [Podman](https://podman.io/docs/installation);
-- [Bruno](https://www.usebruno.com/downloads), opcional para explorar a coleção.
+- [Bruno](https://www.usebruno.com/downloads), opcional para explorar a coleção de requisições.
 
 Verifique as instalações:
 
@@ -154,10 +139,10 @@ cd testes-de-api-com-playwright
 ### 2. Instale as dependências
 
 ```bash
-npm install
+npm ci
 ```
 
-O projeto utiliza o Playwright somente para testes de API. Por isso, não é necessário abrir um navegador para executar os cenários.
+> Se estiver modificando as dependências do projeto, utilize `npm install` para atualizar o `package-lock.json`.
 
 ### 3. Inicie o ambiente ShortBeyond
 
@@ -167,43 +152,16 @@ Com o Podman em execução:
 podman play kube shortbeyond.yaml
 ```
 
-Depois que os containers estiverem prontos, a API deverá responder em:
-
-```text
-http://localhost:3333/health
-```
-
-Também estarão disponíveis:
-
-- aplicação web: `http://localhost`;
-- Adminer: `http://localhost:8080`;
-- PostgreSQL: `localhost:5432`.
+A API deverá responder em `http://localhost:3333/health`. Também estarão disponíveis a aplicação web em `http://localhost`, o Adminer em `http://localhost:8080` e o PostgreSQL em `localhost:5432`.
 
 ### 4. Execute os testes
 
-Para executar toda a suíte:
-
-```bash
-npx playwright test
-```
-
-Para executar somente o projeto de API:
-
-```bash
-npx playwright test --project=api-tests
-```
-
-Para executar um arquivo específico:
-
-```bash
-npx playwright test playwright/e2e/health.spec.js
-```
-
-Para acompanhar uma execução mais detalhada:
-
-```bash
-npx playwright test --reporter=list
-```
+| Objetivo | Comando |
+| --- | --- |
+| Executar toda a suíte | `npm test` |
+| Executar o projeto de API | `npm run test:api` |
+| Executar um arquivo específico | `npx playwright test playwright/e2e/health.spec.js` |
+| Acompanhar a saída detalhada | `npx playwright test --reporter=list` |
 
 ### 5. Encerre o ambiente
 
@@ -215,18 +173,18 @@ podman play kube --down shortbeyond.yaml
 
 ## Testes disponíveis
 
+A configuração usa o projeto `api-tests` e procura os cenários em `playwright/e2e/`.
+
+| Área | Arquivo | Cobertura atual |
+| --- | --- | --- |
+| Health check | `playwright/e2e/health.spec.js` | API disponível, serviço identificado e status saudável |
+| Cadastro | `playwright/e2e/auth/register.spec.js` | Cadastro válido, e-mail duplicado, e-mail inválido e campos obrigatórios |
+| Login | `playwright/e2e/auth/login.spec.js` | Login válido, credenciais inválidas e campos obrigatórios |
+| Links | `playwright/e2e/links/post.spec.js` | Criação autenticada, URL obrigatória, título obrigatório e validação de URL |
+
 ### Health check
 
-Arquivo: `playwright/e2e/health.spec.js`
-
-O cenário verifica se a API está disponível e saudável:
-
-1. envia uma requisição `GET` para `/health`;
-2. valida o status HTTP `200`;
-3. confirma que o serviço retornado é `shortbeyond-api`;
-4. confirma que o estado retornado é `healthy`.
-
-Resposta esperada:
+O cenário envia uma requisição `GET` para `/health`, espera o status `200` e valida a resposta:
 
 ```json
 {
@@ -235,76 +193,25 @@ Resposta esperada:
 }
 ```
 
-### Cadastro de usuários
+### Cadastro e login
 
-Arquivo: `playwright/e2e/auth/register.spec.js`
+Os testes de autenticação usam `authService` para encapsular as chamadas HTTP. Dados de usuários válidos são gerados com a factory `getUser()`, evitando dependência entre cenários positivos.
 
-A suíte valida o fluxo completo de cadastro de usuários na API, cobrindo cenários positivos e negativos:
+### Encurtamento de links
 
-| Cenário | Status esperado | Validação |
-| --- | --- | --- |
-| Cadastro com dados válidos | `201` | Mensagem de sucesso, dados do usuário retornados, senha ausente |
-| E-mail já em uso | `400` | Mensagem de e-mail duplicado |
-| E-mail com formato inválido | `400` | Mensagem de e-mail inválido |
-| Nome não informado | `400` | Mensagem de campo obrigatório |
-| E-mail não informado | `400` | Mensagem de campo obrigatório |
-| Senha não informada | `400` | Mensagem de campo obrigatório |
-
-Exemplo de requisição enviada:
-
-```json
-{
-  "name": "John Doe",
-  "email": "john.doe@example.com",
-  "password": "pwd123"
-}
-```
-
-Os dados do cenário positivo são gerados dinamicamente com `@faker-js/faker` através da factory `getUser()`. Os cenários negativos utilizam dados estáticos para validar cada regra individualmente.
-
-### Login de usuários
-
-Arquivo: `playwright/e2e/auth/login.spec.js`
-
-A suíte valida o fluxo de autenticação (login) na API, cobrindo cenários positivos e negativos:
-
-| Cenário | Status esperado | Validação |
-| --- | --- | --- |
-| Login com credenciais válidas | `200` | Mensagem de sucesso, token retornado, dados do usuário, senha ausente |
-| Senha incorreta | `401` | Mensagem de credenciais inválidas |
-| E-mail não cadastrado | `401` | Mensagem de credenciais inválidas |
-| E-mail não informado | `400` | Mensagem de campo obrigatório |
-| Senha não informada | `400` | Mensagem de campo obrigatório |
-
-Exemplo de requisição enviada:
-
-```json
-{
-  "email": "john.doe@example.com",
-  "password": "pwd123"
-}
-```
-
-O cenário positivo cria um usuário com a factory `getUser()` antes de realizar o login. Os cenários negativos utilizam dados estáticos para validar cada regra de forma isolada.
-
-A suíte utiliza o hook `beforeEach` para inicializar o `authService` a partir do `request` fornecido pelo Playwright, garantindo que cada cenário tenha sua própria instância do service.
+Cada cenário de links cria um usuário próprio, obtém um token de acesso e utiliza `linksService` para enviar requisições autenticadas para `POST /api/links`. A factory `getUserWithLink()` gera o usuário e os dados do link necessários para o cenário.
 
 ## Relatórios
 
-O Playwright está configurado para gerar um relatório HTML. Depois da execução, abra o último relatório com:
+O Playwright está configurado com o reporter HTML. Depois de uma execução, abra o relatório mais recente com:
 
 ```bash
-npx playwright show-report
+npm run test:report
 ```
 
-Os relatórios, traces e resultados são artefatos locais e não são enviados ao GitHub. Eles estão listados no `.gitignore`.
+Os artefatos gerados (`playwright-report`, `test-results` e `blob-report`) permanecem locais e estão ignorados pelo Git.
 
-Em ambientes de integração contínua, a configuração atual também:
-
-- impede o uso acidental de `test.only`;
-- repete testes que falharem até duas vezes;
-- utiliza um único worker para tornar a execução mais previsível;
-- coleta trace na primeira repetição de um teste.
+Em integração contínua, a configuração também impede `test.only`, tenta novamente os testes que falham, usa um único worker e coleta trace na primeira repetição.
 
 ## Estrutura do projeto
 
@@ -315,19 +222,21 @@ Em ambientes de integração contínua, a configuração atual também:
 │   │   ├── Cadastro de ususarios.yml
 │   │   ├── Login do usuario.yml
 │   │   └── folder.yml
-│   ├── .gitignore
 │   └── opencollection.yml
 ├── playwright/
 │   ├── e2e/
 │   │   ├── auth/
 │   │   │   ├── login.spec.js
 │   │   │   └── register.spec.js
+│   │   ├── links/
+│   │   │   └── post.spec.js
 │   │   └── health.spec.js
 │   └── support/
 │       ├── factories/
 │       │   └── user.js
 │       └── services/
-│           └── auth.js
+│           ├── auth.js
+│           └── links.js
 ├── .gitignore
 ├── package-lock.json
 ├── package.json
@@ -338,65 +247,55 @@ Em ambientes de integração contínua, a configuração atual também:
 
 | Caminho | Responsabilidade |
 | --- | --- |
-| `docs/` | Coleção de requisições usada na exploração da API |
+| `docs/` | Coleção Bruno usada na exploração da API |
 | `playwright/e2e/` | Cenários automatizados de API |
-| `playwright/support/factories/` | Factories para geração de dados dinâmicos |
-| `playwright/support/services/` | Services para encapsulamento de chamadas à API (ex.: `authService` com `createUser` e `login`) |
-| `playwright.config.js` | Configurações de execução, projetos, retries, workers e relatórios |
+| `playwright/support/factories/` | Geração de dados dinâmicos para os testes |
+| `playwright/support/services/` | Encapsulamento de chamadas HTTP por domínio |
+| `playwright.config.js` | Configurações de execução, retries, workers e relatórios |
 | `shortbeyond.yaml` | Definição dos containers do ambiente local |
-| `package.json` | Dependências e metadados do projeto Node.js |
+| `package.json` | Dependências e comandos npm do projeto |
 
 ## Estratégia de testes
 
-À medida que a suíte crescer, os cenários serão organizados em torno de alguns princípios:
+A suíte segue os seguintes princípios:
 
-- **independência:** um teste não deve depender da execução ou do resultado de outro;
-- **isolamento:** cada cenário deve preparar os próprios dados e limpar o que não for mais necessário;
-- **clareza:** nomes de testes devem descrever o comportamento esperado;
-- **feedback rápido:** validações na camada de API reduzem o tempo de diagnóstico;
-- **cobertura relevante:** serão considerados fluxos positivos, negativos e regras de negócio;
-- **reutilização:** código repetido deverá ser extraído para factories, services ou helpers;
-- **configuração externa:** URLs e dados sensíveis deverão ser fornecidos por variáveis de ambiente;
-- **evidências:** relatórios e traces deverão facilitar a investigação de falhas.
+- **independência:** cada cenário prepara os próprios dados;
+- **isolamento:** um teste não depende do resultado de outro;
+- **clareza:** os nomes descrevem o comportamento esperado;
+- **feedback rápido:** as regras são validadas diretamente na camada de API;
+- **reutilização:** factories e services concentram responsabilidades repetidas;
+- **evidências:** relatórios e traces apoiam a investigação de falhas;
+- **evolução contínua:** a cobertura aumenta conforme o projeto de estudos avança.
 
 ## Roadmap de estudos
 
-O roadmap abaixo é vivo e será atualizado conforme o progresso no curso.
+O roadmap será atualizado conforme o avanço no curso.
 
 - [x] Configurar o ambiente local do ShortBeyond
 - [x] Criar o projeto Playwright para testes de API
 - [x] Validar a disponibilidade da API com um health check
 - [x] Iniciar a coleção de requisições para exploração da API
-- [x] Automatizar o cadastro de usuários
-- [x] Criar factories para geração de dados
-- [x] Criar service layer para chamadas à API
-- [x] Cobrir cenários negativos de cadastro (campos obrigatórios, e-mail duplicado, e-mail inválido)
-- [x] Aplicar hooks de preparação e limpeza (`beforeEach` para inicialização do service)
-- [x] Automatizar o login e validar o token
-- [ ] Testar o endpoint de encurtamento de links
-- [ ] Extrair código reutilizável
+- [x] Automatizar cadastro, login e validação de token
+- [x] Criar factories e services reutilizáveis
+- [x] Cobrir cenários negativos de autenticação
+- [x] Testar o endpoint de encurtamento de links
 - [ ] Criar fixtures personalizadas
 - [ ] Automatizar consultas com `GET`
 - [ ] Automatizar exclusões com `DELETE`
-- [ ] Executar a regressão completa pela CLI
-- [ ] Configurar a URL base com variáveis de ambiente
-- [ ] Explorar diferentes formatos de relatório
-- [ ] Preparar o banco com global setup
-- [ ] Adicionar testes de carga com Artillery
-- [ ] Adicionar spike tests e analisar os resultados
+- [ ] Configurar URL base e dados sensíveis por variáveis de ambiente
+- [ ] Preparar banco de dados com global setup
+- [ ] Explorar formatos adicionais de relatório
+- [ ] Adicionar testes de carga, spike tests e análise de resultados com Artillery
 - [ ] Configurar integração contínua
 
 ## Boas práticas adotadas
 
-- dependências fixadas por meio do `package-lock.json`;
-- separação entre código de teste, suporte (factories/services) e documentação exploratória;
-- exclusão de dependências e artefatos gerados do controle de versão;
+- dependências versionadas por meio do `package-lock.json`;
+- separação entre cenários, factories, services e documentação exploratória;
+- dados dinâmicos para reduzir acoplamento entre testes;
+- validações de status HTTP e contrato de resposta;
+- artefatos de execução ignorados pelo Git;
 - configuração específica para execução em CI;
-- uso de assertions para validar o contrato da resposta;
-- encapsulamento de chamadas HTTP em services reutilizáveis e unificados por domínio;
-- uso de hooks (`beforeEach`) para inicialização de dependências em cada cenário;
-- geração de dados dinâmicos com factories para evitar acoplamento entre testes;
-- nomes de cenários escritos em português e orientados ao comportamento;
 - histórico incremental para registrar a evolução do aprendizado.
 
 ## Referências
@@ -410,7 +309,7 @@ O roadmap abaixo é vivo e será atualizado conforme o progresso no curso.
 
 ## Autor
 
-Desenvolvido por **Douglas Antonio** como parte dos seus estudos em qualidade de software e automação de testes.
+Desenvolvido por **Douglas Antonio** como parte dos estudos em qualidade de software e automação de testes.
 
 - GitHub: [@DouglasAntoni0](https://github.com/DouglasAntoni0)
 
