@@ -1,16 +1,9 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from '../../support/fixtures'
 import { getUser } from '../../support/factories/user'
-import { authService } from '../../support/services/auth'
 
 test.describe('POST /auth/register', () => {
 
-    let auth
-
-    test.beforeEach(({ request }) => {
-        auth = authService(request)
-    })
-
-    test('deve cadastrar um novo usuario', async ({ request }) => {
+    test('deve cadastrar um novo usuario', async ({ auth }) => {
         const user = getUser()
 
         const response = await auth.createUser(user)
@@ -25,16 +18,14 @@ test.describe('POST /auth/register', () => {
         expect(responseBody.user).not.toHaveProperty('password')
     })
 
-    test('não deve cadastrar quando o email ja estiver em uso', async ({ request }) => {
+    test('não deve cadastrar quando o email ja estiver em uso', async ({ auth }) => {
         const user = getUser()
 
         const preConditionResponse = await auth.createUser(user)
 
         expect(preConditionResponse.status()).toBe(201)
 
-        const response = await request.post('http://localhost:3333/api/auth/register', {
-            data: user
-        })
+        const response = await auth.createUser(user)
 
         expect(response.status()).toBe(400)
 
@@ -42,7 +33,7 @@ test.describe('POST /auth/register', () => {
         expect(responseBody).toHaveProperty('message', 'Este e-mail já está em uso. Por favor, tente outro.')
     })
 
-    test('não deve cadastrar quando o email é incorreto', async ({ request }) => {
+    test('não deve cadastrar quando o email é incorreto', async ({ auth }) => {
         const user = {
             name: 'Douglas Antonio',
             email: 'douglasqa.netlify.app',
@@ -58,7 +49,7 @@ test.describe('POST /auth/register', () => {
         expect(responseBody).toHaveProperty('message', "O campo 'Email' deve ser um email válido")
     })
 
-    test('não deve cadastrar quando o nome não é informado', async ({ request }) => {
+    test('não deve cadastrar quando o nome não é informado', async ({ auth }) => {
         const user = {
             email: 'douglasqa.netlify.app',
             password: 'pwd123'
@@ -73,7 +64,7 @@ test.describe('POST /auth/register', () => {
         expect(responseBody).toHaveProperty('message', "O campo 'Name' é obrigatório")
     })
 
-    test('não deve cadastrar quando o email não é informado', async ({ request }) => {
+    test('não deve cadastrar quando o email não é informado', async ({ auth }) => {
         const user = {
             name: 'Douglas Antonio',
             password: 'pwd123'
@@ -88,7 +79,7 @@ test.describe('POST /auth/register', () => {
         expect(responseBody).toHaveProperty('message', "O campo 'Email' é obrigatório")
     })
 
-    test('não deve cadastrar quando a senha não é informada', async ({ request }) => {
+    test('não deve cadastrar quando a senha não é informada', async ({ auth }) => {
         const user = {
             name: 'Douglas Antonio',
             email: 'douglas@teste.com'

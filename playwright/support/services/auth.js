@@ -1,5 +1,3 @@
-
-
 export const authService = (request) => {
 
     const createUser = async (user) => {

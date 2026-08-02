@@ -1,16 +1,9 @@
-import { test, expect } from '@playwright/test'
-import { authService } from '../../support/services/auth'
+import { test, expect } from '../../support/fixtures'
 import { getUser } from '../../support/factories/user'
 
 test.describe('POST /auth/login', () => {
 
-    let auth
-
-    test.beforeEach(({ request }) => {
-        auth = authService(request)
-    })
-
-    test('deve fazer login com sucesso', async () => {
+    test('deve fazer login com sucesso', async ({ auth }) => {
 
         const user = getUser()
 
@@ -31,7 +24,7 @@ test.describe('POST /auth/login', () => {
 
     })
 
-    test('não deve logar com senha incorreta', async () => {
+    test('não deve logar com senha incorreta', async ({ auth }) => {
         const user = getUser()
 
         const respCreateUser = await auth.createUser(user)
@@ -44,7 +37,7 @@ test.describe('POST /auth/login', () => {
         expect(Body).toHaveProperty('message', 'Credenciais inválidas')
     })
 
-    test('não deve logar com email que não foi cadastrado', async () => {
+    test('não deve logar com email que não foi cadastrado', async ({ auth }) => {
         const user = {
             email: '404@teste.com',
             password: 'pwd123'
@@ -57,7 +50,7 @@ test.describe('POST /auth/login', () => {
         expect(Body).toHaveProperty('message', 'Credenciais inválidas')
     })
 
-    test('não deve logar quando o email não é informado', async () => {
+    test('não deve logar quando o email não é informado', async ({ auth }) => {
         const user = {
             password: 'pwd123'
         }
@@ -69,7 +62,7 @@ test.describe('POST /auth/login', () => {
         expect(Body).toHaveProperty('message', "O campo 'Email' é obrigatório")
     })
 
-    test('não deve logar quando a senha não é informada', async () => {
+    test('não deve logar quando a senha não é informada', async ({ auth }) => {
         const user = {
             email: 'email@teste.com'
         }
