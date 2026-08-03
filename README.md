@@ -3,12 +3,12 @@
 [![Playwright](https://img.shields.io/badge/Playwright-API%20Testing-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?logo=javascript&logoColor=000)](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)
 [![Node.js](https://img.shields.io/badge/Node.js-20%2B-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
-[![Testes](https://img.shields.io/badge/testes-16%20cenários%20automatizados-2EAD33)](#testes-disponíveis)
+[![Testes](https://img.shields.io/badge/testes-20%20cenários%20automatizados-2EAD33)](#testes-disponíveis)
 [![Status](https://img.shields.io/badge/status-em%20desenvolvimento-blue)](#status-do-projeto)
 
 Projeto de automação de testes de APIs REST desenvolvido com **Playwright** e **JavaScript** sobre a aplicação **ShortBeyond**, um encurtador de URLs com API em Go, PostgreSQL e serviços executados em containers.
 
-Mais do que reproduzir exemplos de um curso, este repositório registra a construção progressiva de uma arquitetura de testes organizada, reutilizável e orientada a riscos. O projeto demonstra, na prática, minha capacidade de transformar regras de negócio em cenários automatizados claros, independentes e fáceis de manter.
+Mais do que reproduzir exemplos de um curso, este repositório registra a construção progressiva de uma arquitetura de testes organizada, reutilizável e orientada a riscos. O projeto demonstra, na prática, minha capacidade de transformar regras de negócio em cenários automatizados claros, independentes e fáceis de manter, cobrindo desde a criação até a consulta e a exclusão de recursos.
 
 > **Status:** em desenvolvimento. O conteúdo acompanha minha evolução no curso [Playwright Além da Interface](https://www.udemy.com/course/playwright-alem-da-interface/), de Fernando Papito, e recebe novas implementações conforme avanço nos estudos.
 
@@ -51,8 +51,9 @@ O ambiente local reúne:
 Este projeto evidencia competências importantes para atuação em qualidade de software e automação:
 
 - **visão de risco:** cobertura de caminhos felizes, validações obrigatórias, dados inválidos, duplicidade e credenciais incorretas;
+- **cobertura de ciclo de vida:** automação de criação, consulta e exclusão de links, incluindo recursos existentes, coleções vazias e identificadores inexistentes;
 - **arquitetura sustentável:** separação entre specs, fixtures, factories e services, reduzindo repetição e acoplamento;
-- **independência dos testes:** geração dinâmica de usuários e links para evitar dependência de massa fixa;
+- **independência dos testes:** geração dinâmica de usuários, links e coleções de diferentes tamanhos para evitar dependência de massa fixa;
 - **reuso com fixtures personalizadas:** injeção de `authService` e `linksService` diretamente nos cenários;
 - **validação de contrato:** assertions sobre status HTTP, mensagens, identificadores, dados retornados e ausência de campos sensíveis;
 - **ambiente reproduzível:** API, banco, Adminer e aplicação web documentados em um manifesto Podman;
@@ -79,7 +80,7 @@ Ao longo do projeto, pratico e aprofundo:
 
 ## Status do projeto
 
-**Em desenvolvimento.** No estado atual, a suíte possui **16 cenários automatizados em quatro arquivos de teste**, cobrindo disponibilidade da API, cadastro, login e criação de links.
+**Em desenvolvimento.** No estado atual, a suíte possui **20 cenários automatizados em seis arquivos de teste**, cobrindo disponibilidade da API, cadastro, login e o ciclo de criação, consulta e exclusão de links.
 
 Já foram implementados:
 
@@ -87,9 +88,10 @@ Já foram implementados:
 - projeto Playwright configurado exclusivamente para testes de API;
 - health check com validação do serviço e do estado da aplicação;
 - cenários positivos e negativos de cadastro e login;
-- criação de links autenticada e validações de campos e URL;
-- factories para usuários e links com dados dinâmicos;
-- services reutilizáveis para autenticação e links;
+- criação, consulta e exclusão autenticada de links, com validações de campos, URL e identificadores;
+- factories para usuários, links individuais e coleções de links com dados dinâmicos;
+- services reutilizáveis para autenticação, criação, consulta e exclusão de links;
+- utilitário próprio para geração de ULIDs válidos em cenários negativos;
 - fixtures personalizadas para disponibilizar os services nos testes;
 - execução paralela e comportamento específico para CI;
 - relatório HTML e trace na primeira repetição;
@@ -130,7 +132,7 @@ Os serviços são definidos em `shortbeyond.yaml` e executados no mesmo pod.
 | --- | --- | --- |
 | Banco de dados | `postgres:15` | `5432` |
 | Administração do banco | `adminer` | `8080` |
-| API ShortBeyond | `beyondtest/shortb-api:beta` | `3333` |
+| API ShortBeyond | `beyondtest/shortb-api:hotfix` | `3333` |
 | Aplicação web | `beyondtest/shortb-web:latest` | `80` |
 
 ## Pré-requisitos
@@ -193,7 +195,7 @@ Também estarão disponíveis:
 | --- | --- |
 | Executar toda a suíte | `npm test` |
 | Executar o projeto de API | `npm run test:api` |
-| Executar um arquivo específico | `npx playwright test playwright/e2e/health.spec.js` |
+| Executar um arquivo específico | `npx playwright test playwright/e2e/links/health.spec.js` |
 | Acompanhar a saída detalhada | `npx playwright test --reporter=list` |
 
 O projeto utiliza o Playwright somente para testes de API. Não é necessário instalar ou abrir um navegador para executar os cenários.
@@ -212,11 +214,13 @@ A configuração utiliza o projeto `api-tests` e procura os cenários em `playwr
 
 | Área | Quantidade | Arquivo | Cobertura atual |
 | --- | ---: | --- | --- |
-| Health check | 1 | `playwright/e2e/health.spec.js` | Disponibilidade, identificação do serviço e estado saudável |
+| Health check | 1 | `playwright/e2e/links/health.spec.js` | Disponibilidade, identificação do serviço e estado saudável |
 | Cadastro | 6 | `playwright/e2e/auth/register.spec.js` | Cadastro válido, duplicidade, formato de e-mail e campos obrigatórios |
 | Login | 5 | `playwright/e2e/auth/login.spec.js` | Login válido, senha incorreta, usuário inexistente e campos obrigatórios |
-| Links | 4 | `playwright/e2e/links/post.spec.js` | Criação autenticada, campos obrigatórios e validação de URL |
-| **Total** | **16** | **4 arquivos** | **Cobertura positiva e negativa da API** |
+| Criação de links | 4 | `playwright/e2e/links/post.spec.js` | Criação autenticada, campos obrigatórios e validação de URL |
+| Consulta de links | 2 | `playwright/e2e/links/get.spec.js` | Lista com cinco links e lista vazia |
+| Exclusão de links | 2 | `playwright/e2e/links/delete.spec.js` | Exclusão válida e tentativa com ULID inexistente |
+| **Total** | **20** | **6 arquivos** | **Cobertura positiva e negativa da API** |
 
 ### Health check
 
@@ -237,9 +241,9 @@ A suíte cobre cadastro bem-sucedido, tentativa com e-mail duplicado, formato in
 
 Os cenários validam login bem-sucedido, geração de token, dados do usuário autenticado, senha incorreta, e-mail não cadastrado e campos obrigatórios. A senha também é verificada como ausente na resposta de sucesso.
 
-### Encurtamento de links
+### Ciclo de vida de links
 
-Cada cenário cria um usuário próprio, obtém um token e envia uma requisição autenticada para `POST /api/links`. A cobertura atual valida criação bem-sucedida, código curto alfanumérico, URL original, título e regras de preenchimento dos campos.
+Os cenários criam usuários próprios, obtêm tokens e exercitam o domínio de links por meio de requisições autenticadas. A cobertura valida criação bem-sucedida, código curto alfanumérico, campos obrigatórios, URL inválida, listagem de múltiplos registros, coleção vazia, exclusão válida e tentativa de remoção com ULID inexistente.
 
 ## Arquitetura dos testes
 
@@ -256,7 +260,7 @@ Spec de teste
     +--> Factory de dados
              |
              +--> Usuário dinâmico
-             +--> Link dinâmico
+             +--> Link ou coleção dinâmica
 ```
 
 ### Fixtures
@@ -264,7 +268,7 @@ Spec de teste
 O arquivo `playwright/support/fixtures/index.js` estende o `test` padrão do Playwright e injeta:
 
 - `auth`: operações de cadastro, login e obtenção de token;
-- `links`: criação autenticada de links.
+- `links`: criação, consulta e exclusão autenticada de links.
 
 Com isso, os cenários recebem as dependências de que precisam diretamente nos argumentos do teste, reduzindo inicializações repetidas e deixando a intenção de cada caso mais visível.
 
@@ -273,16 +277,21 @@ Com isso, os cenários recebem as dependências de que precisam diretamente nos 
 A factory `user.js` disponibiliza:
 
 - `getUser()`: cria usuários únicos com nome e e-mail dinâmicos;
-- `getUserWithLink()`: cria o usuário acompanhado de URL e título para os testes de links.
+- `getUserWithLink()`: cria o usuário acompanhado de URL e título para um link;
+- `getUserWithLinks()`: cria o usuário com uma coleção dinâmica de links no tamanho solicitado.
 
 ### Services
 
 Os services encapsulam detalhes HTTP:
 
 - `authService`: cadastro, login e extração do token;
-- `linksService`: criação de links com autenticação Bearer.
+- `linksService`: criação, consulta, obtenção de ID e exclusão de links com autenticação Bearer.
 
 Essa divisão permite evoluir endpoints ou payloads com menor impacto sobre os cenários de negócio.
+
+### Utilitários
+
+O arquivo `playwright/support/utils.js` gera ULIDs no formato esperado pela API. Isso permite testar identificadores inexistentes de forma realista, sem depender de valores fixos ou inválidos para o contrato.
 
 ## Relatórios e evidências
 
@@ -316,17 +325,20 @@ Quando a variável `CI` está ativa, a configuração:
 │   │   ├── auth/
 │   │   │   ├── login.spec.js
 │   │   │   └── register.spec.js
-│   │   ├── links/
-│   │   │   └── post.spec.js
-│   │   └── health.spec.js
+│   │   └── links/
+│   │       ├── delete.spec.js
+│   │       ├── get.spec.js
+│   │       ├── health.spec.js
+│   │       └── post.spec.js
 │   └── support/
 │       ├── factories/
 │       │   └── user.js
 │       ├── fixtures/
 │       │   └── index.js
-│       └── services/
-│           ├── auth.js
-│           └── links.js
+│       ├── services/
+│       │   ├── auth.js
+│       │   └── links.js
+│       └── utils.js
 ├── .gitignore
 ├── package-lock.json
 ├── package.json
@@ -342,6 +354,7 @@ Quando a variável `CI` está ativa, a configuração:
 | `playwright/support/factories/` | Geração de dados dinâmicos |
 | `playwright/support/fixtures/` | Injeção dos services nos cenários |
 | `playwright/support/services/` | Encapsulamento das chamadas HTTP |
+| `playwright/support/utils.js` | Geração de ULIDs para cenários controlados |
 | `playwright.config.js` | Projetos, paralelismo, retries, workers e relatórios |
 | `shortbeyond.yaml` | Definição dos containers do ambiente local |
 | `package.json` | Dependências e comandos npm |
@@ -373,8 +386,8 @@ O roadmap será atualizado conforme o avanço no curso.
 - [x] Cobrir cenários negativos de autenticação
 - [x] Testar o endpoint de encurtamento de links
 - [x] Executar a regressão completa pela CLI
-- [ ] Automatizar consultas com `GET`
-- [ ] Automatizar exclusões com `DELETE`
+- [x] Automatizar consultas com `GET`
+- [x] Automatizar exclusões com `DELETE`
 - [ ] Configurar URL base e dados sensíveis por variáveis de ambiente
 - [ ] Preparar o banco de dados com global setup
 - [ ] Explorar formatos adicionais de relatório
@@ -386,10 +399,13 @@ O roadmap será atualizado conforme o avanço no curso.
 - dependências versionadas por meio do `package-lock.json`;
 - separação clara entre cenários, fixtures, factories, services e documentação;
 - dados dinâmicos para reduzir colisões e acoplamento entre testes;
+- geração parametrizável de coleções para validar respostas com diferentes volumes;
+- geração de ULID para cenários negativos aderentes ao contrato;
 - services reutilizados inclusive nas precondições dos cenários;
 - validações de status HTTP, mensagens e contratos de resposta;
 - verificação de ausência de senha em respostas de sucesso;
 - autenticação Bearer encapsulada no service de links;
+- cobertura do fluxo de criação, listagem e exclusão de recursos;
 - execução paralela para feedback local mais rápido;
 - artefatos de execução ignorados pelo Git;
 - configuração preparada para comportamento controlado em CI;
@@ -408,7 +424,7 @@ O roadmap será atualizado conforme o avanço no curso.
 
 Desenvolvido por **Douglas Antonio**, com foco em qualidade de software, automação de testes e construção de soluções confiáveis.
 
-Este projeto traduz estudos em prática: cada etapa adicionada ao repositório demonstra evolução na leitura de requisitos, no desenho de cenários, na organização da automação e na busca por feedback rápido. Meu objetivo é construir testes que não apenas passem, mas que sejam claros, úteis para investigação e sustentáveis conforme o produto evolui.
+Este projeto traduz estudos em prática: cada etapa adicionada ao repositório demonstra evolução na leitura de requisitos, no desenho de cenários, na organização da automação e na busca por feedback rápido. Meu objetivo é construir testes que não apenas passem, mas que sejam claros, úteis para investigação e sustentáveis conforme o produto evolui. A expansão para criação, consulta e exclusão demonstra uma evolução consciente da cobertura e da arquitetura, não apenas um aumento na quantidade de casos.
 
 - GitHub: [@DouglasAntoni0](https://github.com/DouglasAntoni0)
 
